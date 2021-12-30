@@ -31,5 +31,6 @@ Some preliminary benchmarks show that the double version of the function is
 Setting the size to ``(1000, 1000)`` yields a 5x rather than a 15x improvement,
 likely due to the smaller overhead imposed by the intermediate arrays.
 
-Tests are available, currently in ``test_isint.py``.
+A larger variety of benchmarks are available in ``benchmark_isint.py``.
+Fairly comprehensive tests are available, currently in ``test_isint.py``.
 
