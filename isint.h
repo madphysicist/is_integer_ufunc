@@ -171,7 +171,8 @@ npy_bool isint_longdouble(npy_longdouble n)
         // Guaranteed integer when exponent >= LDBL_MANT_DIG - 1
         if(exponent >= II_EXPONENT_BIAS(uint16_t, 1) + (LDBL_MANT_DIG - 1)) return 1;
         // Otherwise, check that the significand bits past the exponent are zeros
-        return (significand & ((uint64_t)(-1) >> (exponent - II_EXPONENT_BIAS(uint16_t, 1)))) == 0;
+        // Extra +1 is necessary to get past the integer bit, which other representations don't have
+        return (significand & ((uint64_t)(-1) >> (exponent - II_EXPONENT_BIAS(uint16_t, 1) + 1))) == 0;
     } else if(LDBL_MANT_DIG == 113) {
         // Quadruple precision
         uint64_t hi, lo;

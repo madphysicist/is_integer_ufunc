@@ -75,19 +75,12 @@ class TestIsInt:
                 x[40:] *= rng.uniform(-1000, 1000, size=(40,) + shape[1:])
             x[:40, ...] = rng.integers(-1000, 1000, size=(40,) + shape[1:])
             rng.shuffle(x.ravel())
-            result = isint(x)
 
-            q = result != ((x % 1) == 0)
-            z = q.ravel().argmax()
-            print(f'DTYPE {name}')
-            print(f'    X {x.ravel()[:10]}, {result.ravel()[:10]}, {((x.ravel() % 1) == 0)[:10]}')
-            print(f'    ARRAY: {x.size}. BAD: {np.count_nonzero(q)}')
-            print(f'    {result.ravel()[z]} != {((x.ravel() % 1) == 0)[z]} @ {z}')
-            if dtype == np.float128:
-                print(f'    N {x.ravel()[z:z+1].view(np.uint64)}')
+            result = isint(x)
+            actual = ((x % 1) == 0)
 
             assert result.shape == shape, f'Multidim shape {name}'
-            assert np.array_equal(result, ((x % 1) == 0)), f'Multidim {name}'
+            assert np.array_equal(result, actual), f'Multidim {name}'
 
     def test_ints(self):
         """
@@ -118,7 +111,7 @@ class TestIsInt:
                 assert np.isinf(ninf.view(dtype))
                 assert not isint(pinf.view(dtype)), f'+inf {dtype(0).name}'
                 assert not isint(ninf.view(dtype)), f'-inf {dtype(0).name}'
-        # Add ldbl        
+        # Add ldbl
 
     def test_true(self):
         """
@@ -150,4 +143,4 @@ if __name__ == '__main__':
     for name in dir(inst):
         if name.startswith('test_') and callable(value := getattr(inst, name)):
             value()
- 
+

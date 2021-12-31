@@ -8,6 +8,11 @@ To build this package, run
     $ python setup.py build_ext --inplace
     $ cd isint_ufunc
 
+Due to the small and experimental nature of this library, cleaning is largely
+a manual process:
+
+    $ rm -rf build/ isint_ufunc.* __pycache__/
+
 Some preliminary benchmarks show that the double version of the function is
 5x to 15x faster than using ``(x % 1) == 0``. Here is a simple timing test:
 
