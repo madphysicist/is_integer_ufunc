@@ -86,7 +86,6 @@ static void longdouble_isint(char **args, const npy_intp *dimensions, const npy_
  * #TYPE = FLOAT, DOUBLE, LONGDOUBLE#
  */
 /*
-#ifdef NPY_C@TYPE@
 static void c@type@_isint(char **args, const npy_intp *dimensions, const npy_intp *steps, void *data)
 {
     char *in = args[0], *out = args[1];
@@ -96,7 +95,6 @@ static void c@type@_isint(char **args, const npy_intp *dimensions, const npy_int
         *((npy_bool *)out) = ((((npy_c@type@ *)in)->imag == 0) && isint_@type@(((npy_c@type@ *)in)->real));
     }
 }
-#endif // NPY_C@TYPE@
 */
 /**end repeat */
 static void cfloat_isint(char **args, const npy_intp *dimensions, const npy_intp *steps, void *data)
