@@ -1,7 +1,14 @@
+# Summary
+---------
+
 This is a sample implementation of a ufunc that checks if a floating point
 value is an integer. It is inspired by my Stack Overflow question
-https://stackoverflow.com/q/35042128/2988730, which has garnered a bit of
-mild interest.
+https://stackoverflow.com/q/35042128/2988730, and others, which has garnered
+a bit of mild interest.
+
+
+# Installation
+--------------
 
 To build this package, run
 
@@ -12,6 +19,15 @@ Due to the small and experimental nature of this library, cleaning is largely
 a manual process:
 
     $ rm -rf build/ isint_ufunc.* __pycache__/
+
+# Tests
+-------
+
+Fairly comprehensive tests are available, currently in ``test_isint.py``.
+
+
+# Benchmarks
+------------
 
 Some preliminary benchmarks show that the double version of the function is
 5x to 15x faster than using ``(x % 1) == 0``. Here is a simple timing test:
@@ -36,8 +52,38 @@ Some preliminary benchmarks show that the double version of the function is
 Setting the size to ``(1000, 1000)`` yields a 5x rather than a 15x improvement,
 likely due to the smaller overhead imposed by the intermediate arrays.
 
-A larger variety of benchmarks are available in ``benchmark_isint.py``.
-Fairly comprehensive tests are available, currently in ``test_isint.py``.
+A larger variety of benchmarks are available in ``benchmark_isint.py``. The
+script compares the runtimes of the modulo approach for different datatypes
+and array sizes. Here is a sample output:
+
+```
+========================================================================
+                    Speedup of isint vs (x % 1) == 0                    
+========================================================================
+                                Integers                                
+-------------+--------------+--------------+--------------+-------------
+   dtype \ N |          100 |        10000 |      1000000 |    100000000
+-------------+--------------+--------------+--------------+-------------
+       uint8 |         5.1x |        11.6x |        13.6x |         9.7x
+      uint16 |         4.5x |        11.4x |        12.0x |        10.6x
+      uint32 |         4.0x |        11.2x |        13.8x |        11.8x
+      uint64 |         4.1x |        24.4x |        29.2x |        23.5x
+        int8 |         5.5x |        19.0x |        20.1x |        16.2x
+       int16 |         4.7x |        19.5x |        21.0x |        16.8x
+       int32 |         4.1x |        23.8x |        27.9x |        22.6x
+       int64 |         3.8x |        40.8x |        50.5x |        40.7x
+========================================================================
+                                 Floats                                 
+-------------+--------------+--------------+--------------+-------------
+   dtype \ N |          100 |        10000 |      1000000 |    100000000
+-------------+--------------+--------------+--------------+-------------
+     float16 |         5.7x |        31.2x |        33.5x |        31.1x
+     float32 |         4.0x |        16.7x |         5.9x |         6.5x
+     float64 |         4.0x |        25.6x |        26.2x |        25.1x
+    float128 |         4.2x |         9.0x |        11.2x |        13.7x
+========================================================================
+```
+
 
 # References:
 -------------
