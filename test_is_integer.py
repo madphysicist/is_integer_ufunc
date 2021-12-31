@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from isint_ufunc import isint
+from is_integer_ufunc import is_integer
 
 
 def get_dtypes(label, bits):
@@ -17,7 +17,7 @@ odd_dtypes = [np.bytes_, np.string_, np.unicode_, np.object_, np.void,
               np.timedelta64, np.datetime64]
 
 
-class TestIsInt:
+class TestIsInteger:
     float_dtypes = (np.half, np.single, np.double)
     complex_dtypes = (np.complex64, np.complex128, np.complex256)
 
@@ -25,12 +25,12 @@ class TestIsInt:
         """
         Check common python types.
         """
-        assert isint(False), 'Python bool'
-        assert isint(3), 'Python int'
-        assert isint(3.0), 'Python float'
-        assert not isint(-3.1), 'Python float'
+        assert is_integer(False), 'Python bool'
+        assert is_integer(3), 'Python int'
+        assert is_integer(3.0), 'Python float'
+        assert not is_integer(-3.1), 'Python float'
         with pytest.raises(TypeError):
-            isint('abc'), 'Python string'
+            is_integer('abc'), 'Python string'
 
     def test_scalars(self):
         """
@@ -39,34 +39,34 @@ class TestIsInt:
         for dtype in int_dtypes + float_dtypes:
             for k in np.arange(-5, 6):
                 n = dtype(k)
-                assert isint(n), f'{k}: {n.dtype.name}({n})'
+                assert is_integer(n), f'{k}: {n.dtype.name}({n})'
 
         for dtype in uint_dtypes:
             i = np.iinfo(dtype)
             for k in np.arange(i.max - 5, i.max + 1):
                 n = dtype(k)
-                assert isint(n), f'{k}: {n.dtype.name}({n})'
+                assert is_integer(n), f'{k}: {n.dtype.name}({n})'
             for k in np.arange(0, 6):
                 n = dtype(k)
-                assert isint(n), f'{k}: {n.dtype.name}({n})'
+                assert is_integer(n), f'{k}: {n.dtype.name}({n})'
 
         for dtype in float_dtypes:
             i = np.finfo(dtype)
-            assert isint(i.min), f'{i.min.dtype.name}({i.min})'
-            assert isint(i.max), f'{i.max.dtype.name}({i.max})'
-            assert not isint(i.resolution), f'{i.resolution.dtype.name}({i.resolution})'
-            assert not isint(-i.resolution), f'{i.resolution.dtype.name}(-{i.resolution})'
+            assert is_integer(i.min), f'{i.min.dtype.name}({i.min})'
+            assert is_integer(i.max), f'{i.max.dtype.name}({i.max})'
+            assert not is_integer(i.resolution), f'{i.resolution.dtype.name}({i.resolution})'
+            assert not is_integer(-i.resolution), f'{i.resolution.dtype.name}(-{i.resolution})'
 
     def test_zerodims(self):
         """
         Test 2D array with a zero dimension.
         """
         for a in (np.empty((3, 0), dtype=int), np.empty((0, 5), dtype=float)):
-            v = isint(a)
+            v = is_integer(a)
             assert v.dtype == np.bool_
             assert np.array_equal(v, np.empty(a.shape, dtype=bool))
         with pytest.raises(TypeError):
-            isint(np.empty(0, dtype=np.string_))
+            is_integer(np.empty(0, dtype=np.string_))
 
     def test_multidims(self):
         """
@@ -82,7 +82,7 @@ class TestIsInt:
             x[:40, ...] = rng.integers(-1000, 1000, size=(40,) + shape[1:])
             rng.shuffle(x.ravel())
 
-            result = isint(x)
+            result = is_integer(x)
             actual = ((x % 1) == 0)
 
             assert result.shape == shape, f'Multidim shape {i.dtype.name}'
@@ -92,7 +92,7 @@ class TestIsInt:
             i = np.iinfo(dtype)
             x = rng.integers(i.min, i.max + 1, size=shape, dtype=dtype)
 
-            result = isint(x)
+            result = is_integer(x)
 
             assert result.shape == shape, f'Multidim shape {i.dtype.name}'
             assert np.array_equiv(result, True), f'Multidim {i.dtype.name}'
@@ -103,20 +103,20 @@ class TestIsInt:
         """
         for dtype in int_dtypes + uint_dtypes:
             name = dtype(0).dtype.name
-            assert isint(dtype(0)), f'scalar zero {name}'
+            assert is_integer(dtype(0)), f'scalar zero {name}'
             arr = np.zeros((10, 2, 14), dtype=dtype)
-            result = isint(arr)
+            result = is_integer(arr)
             assert result.shape == arr.shape, f'shape zero {name}'
             assert np.array_equiv(result, True), f'array zero {name}'
 
         rng = np.random.default_rng(0xEA717)
         for dtype in float_dtypes:
             name = dtype(0).dtype.name
-            assert isint(dtype('+0')), f'+scalar zero {name}'
-            assert isint(dtype('-0')), f'-scalar zero {name}'
+            assert is_integer(dtype('+0')), f'+scalar zero {name}'
+            assert is_integer(dtype('-0')), f'-scalar zero {name}'
             arr = np.zeros((5, 5, 5), dtype=dtype)
             arr[rng.integers(2, size=arr.shape, dtype=bool)] = dtype('-0')
-            result = isint(arr)
+            result = is_integer(arr)
             assert result.shape == arr.shape, f'shape zero {name}'
             assert np.array_equiv(result, True), f'array zero {name}'
 
@@ -127,10 +127,10 @@ class TestIsInt:
         """
         for dtype in float_dtypes:
             name = dtype(0).dtype.name
-            assert not isint(dtype('nan')), f'scalar nan {name}'
+            assert not is_integer(dtype('nan')), f'scalar nan {name}'
             with pytest.warns(RuntimeWarning):
                 arr = np.ones((4, 4, 4, 4), dtype=dtype) / dtype(0)
-            result = isint(arr)
+            result = is_integer(arr)
             assert result.shape == arr.shape, f'shape nan {name}'
             assert np.array_equiv(result, False), f'array nan {name}'
 
@@ -155,9 +155,9 @@ class TestIsInt:
         for dtype in float_dtypes:
             name = dtype(0).dtype.name
             for inf in (dtype('+inf'), dtype('-inf')):
-                assert not isint(inf), f'scalar {inf} {name}'
+                assert not is_integer(inf), f'scalar {inf} {name}'
                 arr = np.full((10, 12), inf, dtype=dtype)
-                result = isint(arr)
+                result = is_integer(arr)
                 assert result.shape == arr.shape, f'shape {inf} {name}'
                 assert np.array_equiv(result, False), f'array {inf} {name}'
 
@@ -173,13 +173,13 @@ class TestIsInt:
             c = dtype('0+1j')
             d = dtype('6+2j')
             # Scalars: real yes, real no, imaginary, complex
-            assert isint(a), f'scalar real (1) {name}'
-            assert not isint(b), f'scalar real (0) {name}'
-            assert not isint(c), f'scalar imag {name}'
-            assert not isint(d), f'scalar cplx {name}'
+            assert is_integer(a), f'scalar real (1) {name}'
+            assert not is_integer(b), f'scalar real (0) {name}'
+            assert not is_integer(c), f'scalar imag {name}'
+            assert not is_integer(d), f'scalar cplx {name}'
             # Array of mixed type
             arr = np.array([[a, b], [c, d]], dtype=dtype)
-            result = isint(arr)
+            result = is_integer(arr)
             assert result.shape == arr.shape, f'shape cplx {name}'
             assert np.array_equal(result, [[True, False], [False, False]]), f'array cplx {name}'
  
@@ -190,12 +190,13 @@ class TestIsInt:
         for dtype in odd_dtypes:
             x = np.zeros((3, 3), dtype=dtype)
             with pytest.raises(TypeError):
-                isint(x)
+                is_integer(x)
 
 
 if __name__ == '__main__':
-    inst = TestIsInt()
+    inst = TestIsInteger()
     for name in dir(inst):
         if name.startswith('test_') and callable(value := getattr(inst, name)):
+            print(f'Running {name}')
             value()
 

@@ -30,7 +30,7 @@
  * #NTYPE = HALF, FLOAT, DOUBLE#
  */
 /*
-static inline npy_bool isint_@type@(npy_@type@ n)
+static inline npy_bool is_integer_@type@(npy_@type@ n)
 {
     // Zero when everything except sign bit is zero
     if((*((@itype@ *)&n) & ZERO_MASK(@itype@)) == 0) return 1;
@@ -49,7 +49,7 @@ static inline npy_bool isint_@type@(npy_@type@ n)
 */
 /**end repeat */
 
-static inline npy_bool isint_half(npy_half n)
+static inline npy_bool is_integer_half(npy_half n)
 {
     // Zero when everything except sign bit is zero
     if((*((uint16_t *)&n) & II_ZERO_MASK(uint16_t)) == 0) return 1;
@@ -66,7 +66,7 @@ static inline npy_bool isint_half(npy_half n)
     return (*((uint16_t *)&n) & (II_SIGNIFICAND_MASK(uint16_t, NPY_HALF_MANT_DIG) >> ((exponent >> (NPY_HALF_MANT_DIG - 1)) - II_EXPONENT_BIAS(uint16_t, NPY_HALF_MANT_DIG)))) == 0;
 }
 
-static inline npy_bool isint_float(npy_float n)
+static inline npy_bool is_integer_float(npy_float n)
 {
     // Zero when everything except sign bit is zero
     if((*((uint32_t *)&n) & II_ZERO_MASK(uint32_t)) == 0) return 1;
@@ -83,7 +83,7 @@ static inline npy_bool isint_float(npy_float n)
     return (*((uint32_t *)&n) & (II_SIGNIFICAND_MASK(uint32_t, FLT_MANT_DIG) >> ((exponent >> (FLT_MANT_DIG - 1)) - II_EXPONENT_BIAS(uint32_t, FLT_MANT_DIG)))) == 0;
 }
 
-static inline npy_bool isint_double(npy_double n)
+static inline npy_bool is_integer_double(npy_double n)
 {
     // Zero when everything except sign bit is zero
     if((*((uint64_t *)&n) & II_ZERO_MASK(uint64_t)) == 0) return 1;
@@ -105,13 +105,13 @@ static inline npy_bool isint_double(npy_double n)
 // also be either double precision, extended precision (80-bit) or quadruple
 // precision (128-bit)
 
-npy_bool isint_longdouble(npy_longdouble n)
+npy_bool is_integer_longdouble(npy_longdouble n)
 {
     // These ifs evaluate constants, so should effectively be compiled out
     if(sizeof(npy_longdouble) == sizeof(npy_float)) {
-        return isint_float((npy_float)n);
+        return is_integer_float((npy_float)n);
     } else if(sizeof(npy_longdouble) == sizeof(npy_double)) {
-        return isint_double((npy_double)n);
+        return is_integer_double((npy_double)n);
     } else if(LDBL_MANT_DIG == 64) {
         // 80-bit integer represented in 10, 12 or 16 bytes (only 10 used)
         uint64_t significand;

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 '''
-    setup.py file for isint.c
+    setup.py file for is_integer.c
     Note that since this is a numpy extension
     we use numpy.distutils instead of
     distutils from the python standard library.
@@ -35,7 +35,7 @@ def configuration(parent_package='', top_path=None):
     info = get_info('npymath')
 
     config = Configuration('', parent_package, top_path)
-    config.add_extension('isint_ufunc', ['isint.c'], extra_info=info)
+    config.add_extension('is_integer_ufunc', ['is_integer.c'], extra_info=info)
 
     return config
 

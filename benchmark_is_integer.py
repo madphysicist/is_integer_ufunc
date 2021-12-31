@@ -1,6 +1,6 @@
 from timeit import Timer
 import numpy as np
-from isint_ufunc import isint
+from is_integer_ufunc import is_integer
 
 
 SIZES = range(2, 9, 2)
@@ -21,7 +21,7 @@ rng = np.random.default_rng(0xBEEF)
 
 
 print(f'{"=":=^72}')
-print(f'{"Speedup of isint vs (x % 1) == 0":^72s}')
+print(f'{"Speedup of is_integer vs (x % 1) == 0":^72s}')
 print(f'{"=":=^72}')
 print(f'{"Integers":^72s}')
 print(*[12 * '-'] * 5, sep='-+-')
@@ -37,7 +37,7 @@ for dtype in UTYPES + ITYPES:
     print(f'{i.dtype.name:>12s}', end='')
     for size in SIZES:
         x = rng.integers(i.min, i.max, size=10**size, dtype=dtype)
-        t0 = Bench('isint(x)', globals=globals()).autorange()
+        t0 = Bench('is_integer(x)', globals=globals()).autorange()
         t1 = Bench('(x % 1) == 0', globals=globals()).autorange()
         print(f' | {t1 / t0:>11.1f}x', end='')
     print()
@@ -62,7 +62,7 @@ for dtype in FTYPES:
             x[half:] *= rng.uniform(-1000, 1000, size=half)
         x[:half] = rng.integers(-1000, 1000, size=half)
         rng.shuffle(x)
-        t0 = Bench('isint(x)', globals=globals()).autorange()
+        t0 = Bench('is_integer(x)', globals=globals()).autorange()
         t1 = Bench('(x % 1) == 0', globals=globals()).autorange()
         print(f' | {t1 / t0:>11.1f}x', end='')
     print()
