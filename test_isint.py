@@ -4,25 +4,22 @@ import pytest
 from isint_ufunc import isint
 
 
-def annotated(cls):
-    def annotate(fn):
-        def wrapper(*args, **kwargs):
-            print('Starting', fn.__name__)
-            return fn(*args, **kwargs)
-        return wrapper
-    for name, value in list(cls.__dict__.items()):
-        if name.startswith('test_') and callable(value):
-            setattr(cls, name, annotate(value))
-    return cls
+def get_dtypes(label, bits):
+    return [getattr(np, name) for n in bits if hasattr(np, name := f'{label}{n}')]
 
-@annotated
+float_dtypes = get_dtypes('float', [16, 32, 64, 80, 96, 128, 256])
+cplx_dtypes = get_dtypes('complex', [64, 128, 160, 192, 256, 512])
+int_dtypes = get_dtypes('int', [8, 16, 32, 64, 128, 256])
+uint_dtypes = get_dtypes('uint', [8, 16, 32, 64, 128, 256])
+
+# This does not have to be overly complete
+odd_dtypes = [np.bytes_, np.string_, np.unicode_, np.object_, np.void,
+              np.timedelta64, np.datetime64]
+
+
 class TestIsInt:
-    int_dtypes = (np.bool_, np.int8, np.uint8, np.int16, np.uint16,
-                  np.int32, np.uint32, np.int64, np.uint64)
-    float_dtypes = (np.half, np.float32, np.float64, np.float128)
+    float_dtypes = (np.half, np.single, np.double)
     complex_dtypes = (np.complex64, np.complex128, np.complex256)
-    odd_dtypes = (np.bytes_, np.string_, np.unicode_, np.object_, np.void,
-                  np.timedelta64, np.datetime64)
 
     def test_objects(self):
         """
@@ -39,12 +36,21 @@ class TestIsInt:
         """
         Verify that a small sample of each scalar type works properly.
         """
-        for dtype in self.int_dtypes + self.float_dtypes:
+        for dtype in int_dtypes + float_dtypes:
             for k in np.arange(-5, 6):
                 n = dtype(k)
                 assert isint(n), f'{k}: {n.dtype.name}({n})'
 
-        for dtype in self.float_dtypes:
+        for dtype in uint_dtypes:
+            i = np.iinfo(dtype)
+            for k in np.arange(i.max - 5, i.max + 1):
+                n = dtype(k)
+                assert isint(n), f'{k}: {n.dtype.name}({n})'
+            for k in np.arange(0, 6):
+                n = dtype(k)
+                assert isint(n), f'{k}: {n.dtype.name}({n})'
+
+        for dtype in float_dtypes:
             i = np.finfo(dtype)
             assert isint(i.min), f'{i.min.dtype.name}({i.min})'
             assert isint(i.max), f'{i.max.dtype.name}({i.max})'
@@ -68,8 +74,8 @@ class TestIsInt:
         """
         shape = (80, 53, 17, 20)
         rng = np.random.default_rng(0xBEEF)
-        for dtype in self.float_dtypes:
-            name = np.finfo(dtype).dtype.name
+        for dtype in float_dtypes:
+            i = np.finfo(dtype)
             x = rng.uniform(-1000, 1000, size=shape).astype(dtype)
             if dtype == np.float128:
                 x[40:] *= rng.uniform(-1000, 1000, size=(40,) + shape[1:])
@@ -79,18 +85,24 @@ class TestIsInt:
             result = isint(x)
             actual = ((x % 1) == 0)
 
-            assert result.shape == shape, f'Multidim shape {name}'
-            assert np.array_equal(result, actual), f'Multidim {name}'
+            assert result.shape == shape, f'Multidim shape {i.dtype.name}'
+            assert np.array_equal(result, actual), f'Multidim {i.dtype.name}'
 
-    def test_ints(self):
-        """
-        Check for all the integer types.
-        """
+        for dtype in int_dtypes + uint_dtypes:
+            i = np.iinfo(dtype)
+            x = rng.integers(i.min, i.max + 1, size=shape, dtype=dtype)
+
+            result = isint(x)
+
+            assert result.shape == shape, f'Multidim shape {i.dtype.name}'
+            assert np.array_equiv(result, True), f'Multidim {i.dtype.name}'
+
 
     def test_nans(self):
         """
         Verify all the valid nans.
         """
+        
 
     def test_unpseudonormal(self):
         """
@@ -102,16 +114,9 @@ class TestIsInt:
         """
         Test infinities.
         """
-        for dtype, pinf, ninf in zip(
-                [np.float16, np.float32, np.float64],
-                [np.uint16(0x7C00), np.uint32(0x7F800000), np.uint64(0x7FF0000000000000)],
-                [np.uint16(0xFC00), np.uint32(0xFF800000), np.uint64(0xFFF0000000000000)]):
-            for sbit in (0, 1):
-                assert np.isinf(pinf.view(dtype))
-                assert np.isinf(ninf.view(dtype))
-                assert not isint(pinf.view(dtype)), f'+inf {dtype(0).name}'
-                assert not isint(ninf.view(dtype)), f'-inf {dtype(0).name}'
-        # Add ldbl
+        for dtype in float_dtypes:
+            assert not isint(dtype('+inf')), f'+inf {dtype(0).dtype.name}'
+            assert not isint(dtype('-inf')), f'-inf {dtype(0).dtype.name}'
 
     def test_true(self):
         """
@@ -132,7 +137,7 @@ class TestIsInt:
         """
         Check string, unicode, object, datetime, timedela.
         """
-        for dtype in self.odd_dtypes:
+        for dtype in odd_dtypes:
             x = np.zeros((3, 3), dtype=dtype)
             with pytest.raises(TypeError):
                 isint(x)
