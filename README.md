@@ -39,3 +39,26 @@ likely due to the smaller overhead imposed by the intermediate arrays.
 A larger variety of benchmarks are available in ``benchmark_isint.py``.
 Fairly comprehensive tests are available, currently in ``test_isint.py``.
 
+# References:
+-------------
+
+- https://standards.ieee.org/standard/754-2019.html: IEEE 754-2019 - IEEE Standard for Floating-Point Arithmetic
+- https://en.wikipedia.org/wiki/IEEE_754
+- https://en.wikipedia.org/wiki/Half-precision_floating-point_format
+- https://en.wikipedia.org/wiki/Single-precision_floating-point_format
+- https://en.wikipedia.org/wiki/Double-precision_floating-point_format
+- https://en.wikipedia.org/wiki/Extended_precision
+- https://en.wikipedia.org/wiki/Quadruple-precision_floating-point_format
+
+
+# Justifications:
+-----------------
+
+- https://stackoverflow.com/q/35042128/2988730: Numpy: Check if float array contains whole numbers
+- https://stackoverflow.com/q/64044147/2988730: How to check if all elements of a numpy array have integer values? 
+- https://stackoverflow.com/q/36505879/2988730: Convert float64 to int64 using "safe"
+- https://stackoverflow.com/q/21583758/2988730: How to check if a float value is a whole number
+- https://stackoverflow.com/q/934616/2988730: How do I find out if a numpy array contains integers?
+- https://stackoverflow.com/q/6209008/2988730: Checking if float is equivalent to an integer value in python
+- https://stackoverflow.com/q/52094533/2988730: Filter integers in numpy float array
+
