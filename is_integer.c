@@ -11,6 +11,8 @@
 #include "numpy/npy_common.h"
 #include "is_integer.h"
 
+#include "is_integer.docstring"
+
 /*
  * is_integer.c: ufunc wrapper for the `is_integer` functions.
  */
@@ -228,7 +230,7 @@ PyMODINIT_FUNC PyInit_is_integer_ufunc(void)
             funcs, data, types,
             sizeof(funcs) / sizeof(funcs[0]),
             1, 1, PyUFunc_None, "is_integer",
-            "is_integer_docstring", 0);
+            is_integer_docstring, 0);
 
     if(PyModule_AddObject(m, "is_integer", is_integer)) {
         Py_XDECREF(is_integer);
