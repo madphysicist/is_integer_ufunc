@@ -1,4 +1,4 @@
-is_integer_docstring =
+const char *is_integer_docstring =
 "Determine if each element of an array contains an integer quantity.\n"
 "\n"
 "This function is mostly useful for floating point types. Integer and boolean\n"
@@ -17,7 +17,8 @@ is_integer_docstring =
 "    Floating point or integer array. Other dtypes, like object, string, etc\n"
 "    are not supported. `bool` is considered to be an integer.\n"
 "**kwargs\n"
-"    For other keyword-only arguments, see the `ufunc docs`.\n"
+"    For other keyword-only arguments, see the\n"
+"    :ref:`ufunc docs <ufuncs.kwargs>`.\n"
 "\n"
 "Returns\n"
 "-------\n"
