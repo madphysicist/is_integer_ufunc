@@ -6,6 +6,7 @@
 
 
 // This is temporary: it needs to go in "halffloat.h"
+// (numpy/core/include/numpy/halffloat.h)
 #define NPY_HALF_MANT_DIG    (11)
 
 
