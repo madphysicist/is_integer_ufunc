@@ -1,3 +1,5 @@
+This project has moved to GitLab: https://gitlab.com/madphysicist/is_integer_ufunc. Please download the latest code and submit issues there rather than GitHub, which will no longer be monitored until this stale clone is deleted.
+
 # Summary
 ---------
 
